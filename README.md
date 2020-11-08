@@ -45,5 +45,5 @@ cd CarND-Traffic-Sign-Classifier-Project
 jupyter notebook Traffic_Sign_Classifier.ipynb
 ```
 
-3. Follow the instructions in the `Traffic_Signs_Recognition.ipynb` notebook.
+3. Follow the instructions in the `Traffic_Sign_Classifier.ipynb` notebook.
 
