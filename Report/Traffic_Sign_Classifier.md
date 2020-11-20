@@ -5,28 +5,34 @@
 
 ## Project: Build a Traffic Sign Recognition Classifier
 
-The goals / steps of this project are the following:
-* Load the data set (see below for links to the project data set)
-* Explore, summarize and visualize the data set
-* Design, train and test a model architecture
-* Use the model to make predictions on new images
-* Analyze the softmax probabilities of the new images
-* Summarize the results with a written report
+In this notebook, a template is provided for you to implement your functionality in stages, which is required to successfully complete this project. If additional code is required that cannot be included in the notebook, be sure that the Python code is successfully imported and included in your submission if necessary. 
 
-## Rubric Points
-### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
+> **Note**: Once you have completed all of the code implementations, you need to finalize your work by exporting the iPython Notebook as an HTML document. Before exporting the notebook to html, all of the code cells need to have been run so that reviewers can see the final implementation and output. You can then export the notebook by using the menu above and navigating to  \n",
+    "**File -> Download as -> HTML (.html)**. Include the finished document along with this notebook as your submission. 
+
+In addition to implementing code, there is a writeup to complete. The writeup should be completed in a separate file, which can be either a markdown file or a pdf document. There is a [write up template](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/writeup_template.md) that can be used to guide the writing process. Completing the code template and writeup template will cover all of the [rubric points](https://review.udacity.com/#!/rubrics/481/view) for this project.
+
+The [rubric](https://review.udacity.com/#!/rubrics/481/view) contains "Stand Out Suggestions" for enhancing the project beyond the minimum requirements. The stand out suggestions are optional. If you decide to pursue the "stand out suggestions", you can include the code in this Ipython notebook and also discuss the results in the writeup file.
+
+
+>**Note:** Code and Markdown cells can be executed using the **Shift + Enter** keyboard shortcut. In addition, Markdown cells can be edited by typically double-clicking the cell to enter edit mode.
+
+
+```python
+import pickle
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+import cv2
+import tensorflow as tf
+from tensorflow.contrib.layers import flatten
+
+%matplotlib inline
+
+```
 
 ---
-### Writeup / README
-
-You're reading it! and here is a link to my [project code](https://github.com/yizonggen/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb)
-
-### Data Set Summary & Exploration
-
-#### 1. Provide a basic summary of the data set. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
-
----
-#### Step 0: Load The Data
+## Step 0: Load The Data
 
 
 ```python
@@ -52,7 +58,7 @@ X_test, y_test = test['features'], test['labels']
 
 ---
 
-#### Step 1: Dataset Summary & Exploration
+## Step 1: Dataset Summary & Exploration
 
 The pickled data is a dictionary with 4 key/value pairs:
 
@@ -61,7 +67,9 @@ The pickled data is a dictionary with 4 key/value pairs:
 - `'sizes'` is a list containing tuples, (width, height) representing the original width and height the image.
 - `'coords'` is a list containing tuples, (x1, y1, x2, y2) representing coordinates of a bounding box around the sign in the image. **THESE COORDINATES ASSUME THE ORIGINAL IMAGE. THE PICKLED DATA CONTAINS RESIZED VERSIONS (32 by 32) OF THESE IMAGES**
 
-#### Provide a Basic Summary of the Data Set Using Python, Numpy and/or Pandas
+Complete the basic data summary below. Use python, numpy and/or pandas methods to calculate the data summary rather than hard coding the results. For example, the [pandas shape method](http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.shape.html) might be useful for calculating some of the summary results. 
+
+### Provide a Basic Summary of the Data Set Using Python, Numpy and/or Pandas
 
 
 ```python
@@ -94,9 +102,8 @@ print("Number of classes =", n_classes)
     Number of classes = 43
 
 
-#### 2. Include an exploratory visualization of the dataset
+### Include an exploratory visualization of the dataset
 
-Here is an exploratory visualization of the data set. They include bar charts showing how the number of data samples distributed in training, validation and testing dataset.
 Visualize the German Traffic Signs Dataset using the pickled file(s). This is open ended, suggestions include: plotting traffic sign images, plotting the count of each sign, etc. 
 
 The [Matplotlib](http://matplotlib.org/) [examples](http://matplotlib.org/examples/index.html) and [gallery](http://matplotlib.org/gallery.html) pages are a great resource for doing visualizations in Python.
@@ -215,20 +222,34 @@ Use the code cell (or multiple code cells, if necessary) to implement the first 
 X_train_rgb = X_train
 X_train_gray = np.sum(X_train/3, axis=3, keepdims=True)
 
+X_valid_rgb = X_valid
+X_valid_gray = np.sum(X_valid/3, axis=3, keepdims=True)
+
 X_test_rgb = X_test
 X_test_gray = np.sum(X_test/3, axis=3, keepdims=True)
 
-print('RGB image shape:', X_train_rgb.shape)
-print('Grayscale image shape:', X_train_gray.shape)
+print('Training set RGB image shape:', X_train_rgb.shape)
+print('Training set Grayscale image shape:', X_train_gray.shape)
+
+print('Validation set RGB image shape:', X_valid_rgb.shape)
+print('Validation set Grayscale image shape:', X_valid_gray.shape)
+
+print('Testing set RGB image shape:', X_test_rgb.shape)
+print('Testing set Grayscale image shape:', X_test_gray.shape)
 ```
 
-    RGB image shape: (34799, 32, 32, 3)
-    Grayscale image shape: (34799, 32, 32, 1)
+    Training set RGB image shape: (34799, 32, 32, 3)
+    Training set Grayscale image shape: (34799, 32, 32, 1)
+    Validation set RGB image shape: (4410, 32, 32, 3)
+    Validation set Grayscale image shape: (4410, 32, 32, 1)
+    Testing set RGB image shape: (12630, 32, 32, 3)
+    Testing set Grayscale image shape: (12630, 32, 32, 1)
 
 
 
 ```python
 X_train = X_train_gray
+X_valid = X_valid_gray
 X_test = X_test_gray
 
 ```
@@ -238,13 +259,16 @@ X_test = X_test_gray
 ## Normalize the train and test datasets to (-1,1)
 
 X_train_normalized = (X_train - 128)/128 
+X_valid_normalized = (X_valid - 128)/128 
 X_test_normalized = (X_test - 128)/128
 
 print(np.mean(X_train_normalized))
+print(np.mean(X_valid_normalized))
 print(np.mean(X_test_normalized))
 ```
 
     -0.354081335648
+    -0.347215411128
     -0.358215153428
 
 
@@ -261,32 +285,15 @@ The preprocessing process consists of:
 - Normalizing the data to the range (-1,1) - This was done using the line of code X_train_normalized = (X_train - 128)/128. This is because having a wider distribution in the data would make it more difficult to train using a singlar learning rate. Different features could encompass far different ranges and a single learning rate might make some weights diverge.
 
 
-### create the validation dataset
-
-The SciKit Learn train_test_split function is used to create a validation set out of the training set. 20% of the training set to create the validation set.
-
 
 ```python
 from sklearn.utils import shuffle
-from sklearn.model_selection import train_test_split
 
 ## Shuffle the training dataset
 
-X_train_normalized, y_train = shuffle(X_train_normalized, y_train)
-
-## Split validation dataset off from training dataset
-
-X_train, X_validation, y_train, y_validation = train_test_split(X_train_normalized, y_train, test_size=0.20, random_state=100)
-
-print("Previous X_train sample size:",len(X_train_normalized))
-print("New X_train sample size:",len(X_train))
-print("X_validation sample size:",len(X_validation))
+X_train, y_train = shuffle(X_train_normalized, y_train)
+X_valid, y_valid = X_valid_normalized, y_valid
 ```
-
-    Previous X_train sample size: 34799
-    New X_train sample size: 27839
-    X_validation sample size: 6960
-
 
 ### Model Architecture
 
@@ -368,8 +375,8 @@ def LeNet(x):
 
 
 ```python
-epochs = 100
-batch_size = 64
+epochs = 50
+batch_size = 128
 learning_rate = 0.001
 ```
 
@@ -428,8 +435,8 @@ How the model was trained by discussing what optimizer was used, batch size, num
 
 The Adam optimizer is used. The hyperparameters are used as follows:
 
-- batch size: 64
-- epochs: 100
+- batch size: 128
+- epochs: 50
 - learning rate: 0.001
 - mu: 0
 - sigma: 0.1
@@ -451,136 +458,65 @@ with tf.Session() as sess:
             batch_x, batch_y = X_train[offset:end], y_train[offset:end]
             sess.run(training_operation, feed_dict={x: batch_x, y: batch_y, keep_prob: 0.7})
             
-        validation_accuracy = evaluate(X_validation, y_validation)
+        validation_accuracy = evaluate(X_valid, y_valid)
         print("Epoch {}: Validation Accuracy = {:.3f}".format(i+1, validation_accuracy))
         if validation_accuracy>maximum_validation_acc:
             maximum_validation_acc = validation_accuracy
-            saver.save(sess, './lenet')
-            print("Model saved")
-            
+    saver.save(sess, './lenet')
+    print("Model saved")        
 ```
 
     Start Training Process ....
-    Epoch 1: Validation Accuracy = 0.853
-    Model saved
-    Epoch 2: Validation Accuracy = 0.923
-    Model saved
-    Epoch 3: Validation Accuracy = 0.955
-    Model saved
-    Epoch 4: Validation Accuracy = 0.964
-    Model saved
-    Epoch 5: Validation Accuracy = 0.970
-    Model saved
-    Epoch 6: Validation Accuracy = 0.964
-    Epoch 7: Validation Accuracy = 0.976
-    Model saved
-    Epoch 8: Validation Accuracy = 0.978
-    Model saved
-    Epoch 9: Validation Accuracy = 0.977
-    Epoch 10: Validation Accuracy = 0.976
-    Epoch 11: Validation Accuracy = 0.978
-    Model saved
-    Epoch 12: Validation Accuracy = 0.980
-    Model saved
-    Epoch 13: Validation Accuracy = 0.979
-    Epoch 14: Validation Accuracy = 0.979
-    Epoch 15: Validation Accuracy = 0.982
-    Model saved
-    Epoch 16: Validation Accuracy = 0.981
-    Epoch 17: Validation Accuracy = 0.989
-    Model saved
-    Epoch 18: Validation Accuracy = 0.975
-    Epoch 19: Validation Accuracy = 0.980
-    Epoch 20: Validation Accuracy = 0.983
-    Epoch 21: Validation Accuracy = 0.988
-    Epoch 22: Validation Accuracy = 0.990
-    Model saved
-    Epoch 23: Validation Accuracy = 0.980
-    Epoch 24: Validation Accuracy = 0.984
-    Epoch 25: Validation Accuracy = 0.986
-    Epoch 26: Validation Accuracy = 0.985
-    Epoch 27: Validation Accuracy = 0.987
-    Epoch 28: Validation Accuracy = 0.983
-    Epoch 29: Validation Accuracy = 0.989
-    Epoch 30: Validation Accuracy = 0.988
-    Epoch 31: Validation Accuracy = 0.983
-    Epoch 32: Validation Accuracy = 0.985
-    Epoch 33: Validation Accuracy = 0.990
-    Model saved
-    Epoch 34: Validation Accuracy = 0.990
-    Epoch 35: Validation Accuracy = 0.989
-    Epoch 36: Validation Accuracy = 0.984
-    Epoch 37: Validation Accuracy = 0.988
-    Epoch 38: Validation Accuracy = 0.991
-    Model saved
-    Epoch 39: Validation Accuracy = 0.991
-    Model saved
-    Epoch 40: Validation Accuracy = 0.991
-    Model saved
-    Epoch 41: Validation Accuracy = 0.991
-    Epoch 42: Validation Accuracy = 0.991
-    Epoch 43: Validation Accuracy = 0.991
-    Epoch 44: Validation Accuracy = 0.991
-    Epoch 45: Validation Accuracy = 0.987
-    Epoch 46: Validation Accuracy = 0.988
-    Epoch 47: Validation Accuracy = 0.990
-    Epoch 48: Validation Accuracy = 0.987
-    Epoch 49: Validation Accuracy = 0.986
-    Epoch 50: Validation Accuracy = 0.986
-    Epoch 51: Validation Accuracy = 0.991
-    Epoch 52: Validation Accuracy = 0.992
-    Model saved
-    Epoch 53: Validation Accuracy = 0.992
-    Model saved
-    Epoch 54: Validation Accuracy = 0.992
-    Model saved
-    Epoch 55: Validation Accuracy = 0.992
-    Epoch 56: Validation Accuracy = 0.992
-    Epoch 57: Validation Accuracy = 0.992
-    Epoch 58: Validation Accuracy = 0.992
-    Epoch 59: Validation Accuracy = 0.992
-    Epoch 60: Validation Accuracy = 0.992
-    Epoch 61: Validation Accuracy = 0.992
-    Epoch 62: Validation Accuracy = 0.992
-    Epoch 63: Validation Accuracy = 0.993
-    Model saved
-    Epoch 64: Validation Accuracy = 0.992
-    Epoch 65: Validation Accuracy = 0.992
-    Epoch 66: Validation Accuracy = 0.992
-    Epoch 67: Validation Accuracy = 0.992
-    Epoch 68: Validation Accuracy = 0.992
-    Epoch 69: Validation Accuracy = 0.992
-    Epoch 70: Validation Accuracy = 0.992
-    Epoch 71: Validation Accuracy = 0.963
-    Epoch 72: Validation Accuracy = 0.988
-    Epoch 73: Validation Accuracy = 0.988
-    Epoch 74: Validation Accuracy = 0.991
-    Epoch 75: Validation Accuracy = 0.990
-    Epoch 76: Validation Accuracy = 0.990
-    Epoch 77: Validation Accuracy = 0.986
-    Epoch 78: Validation Accuracy = 0.990
-    Epoch 79: Validation Accuracy = 0.991
-    Epoch 80: Validation Accuracy = 0.989
-    Epoch 81: Validation Accuracy = 0.990
-    Epoch 82: Validation Accuracy = 0.990
-    Epoch 83: Validation Accuracy = 0.982
-    Epoch 84: Validation Accuracy = 0.990
-    Epoch 85: Validation Accuracy = 0.982
-    Epoch 86: Validation Accuracy = 0.988
-    Epoch 87: Validation Accuracy = 0.991
-    Epoch 88: Validation Accuracy = 0.990
-    Epoch 89: Validation Accuracy = 0.992
-    Epoch 90: Validation Accuracy = 0.979
-    Epoch 91: Validation Accuracy = 0.987
-    Epoch 92: Validation Accuracy = 0.992
-    Epoch 93: Validation Accuracy = 0.992
-    Epoch 94: Validation Accuracy = 0.992
-    Epoch 95: Validation Accuracy = 0.992
-    Epoch 96: Validation Accuracy = 0.992
-    Epoch 97: Validation Accuracy = 0.992
-    Epoch 98: Validation Accuracy = 0.993
-    Epoch 99: Validation Accuracy = 0.992
-    Epoch 100: Validation Accuracy = 0.993
+    Epoch 1: Validation Accuracy = 0.731
+    Epoch 2: Validation Accuracy = 0.819
+    Epoch 3: Validation Accuracy = 0.861
+    Epoch 4: Validation Accuracy = 0.883
+    Epoch 5: Validation Accuracy = 0.866
+    Epoch 6: Validation Accuracy = 0.877
+    Epoch 7: Validation Accuracy = 0.898
+    Epoch 8: Validation Accuracy = 0.883
+    Epoch 9: Validation Accuracy = 0.912
+    Epoch 10: Validation Accuracy = 0.907
+    Epoch 11: Validation Accuracy = 0.906
+    Epoch 12: Validation Accuracy = 0.912
+    Epoch 13: Validation Accuracy = 0.907
+    Epoch 14: Validation Accuracy = 0.915
+    Epoch 15: Validation Accuracy = 0.911
+    Epoch 16: Validation Accuracy = 0.915
+    Epoch 17: Validation Accuracy = 0.923
+    Epoch 18: Validation Accuracy = 0.924
+    Epoch 19: Validation Accuracy = 0.916
+    Epoch 20: Validation Accuracy = 0.916
+    Epoch 21: Validation Accuracy = 0.915
+    Epoch 22: Validation Accuracy = 0.934
+    Epoch 23: Validation Accuracy = 0.920
+    Epoch 24: Validation Accuracy = 0.924
+    Epoch 25: Validation Accuracy = 0.919
+    Epoch 26: Validation Accuracy = 0.938
+    Epoch 27: Validation Accuracy = 0.932
+    Epoch 28: Validation Accuracy = 0.926
+    Epoch 29: Validation Accuracy = 0.938
+    Epoch 30: Validation Accuracy = 0.923
+    Epoch 31: Validation Accuracy = 0.927
+    Epoch 32: Validation Accuracy = 0.928
+    Epoch 33: Validation Accuracy = 0.930
+    Epoch 34: Validation Accuracy = 0.940
+    Epoch 35: Validation Accuracy = 0.937
+    Epoch 36: Validation Accuracy = 0.940
+    Epoch 37: Validation Accuracy = 0.945
+    Epoch 38: Validation Accuracy = 0.923
+    Epoch 39: Validation Accuracy = 0.917
+    Epoch 40: Validation Accuracy = 0.938
+    Epoch 41: Validation Accuracy = 0.945
+    Epoch 42: Validation Accuracy = 0.944
+    Epoch 43: Validation Accuracy = 0.949
+    Epoch 44: Validation Accuracy = 0.946
+    Epoch 45: Validation Accuracy = 0.946
+    Epoch 46: Validation Accuracy = 0.946
+    Epoch 47: Validation Accuracy = 0.945
+    Epoch 48: Validation Accuracy = 0.945
+    Epoch 49: Validation Accuracy = 0.944
+    Epoch 50: Validation Accuracy = 0.945
     Model saved
 
 
@@ -598,7 +534,7 @@ with tf.Session() as sess:
 ```
 
     INFO:tensorflow:Restoring parameters from ./lenet
-    Test Set Accuracy = 0.936
+    Test Set Accuracy = 0.932
 
 
 ### Discussion
@@ -607,11 +543,9 @@ Describes the approach to finding a solution. Accuracy on the validation set is 
 
 ### Answer
 
-The test accuray is 93.6% for the trained model. 
+The test accuray is 93.2% for the trained model. 
 
 In order to find the solution, I have done a lot of work to adjust the hyper parameters in order to find a good performance for the trained model, for example, the learning rate and batch size, etc. Of course, I also searched on the internet and read the literature to find the potential options from the existing work, which has reduced a lot of my time to do the trial and error processes. 
-
-Meanwhile, in order to reduce the overfitting, I save the trained model when only the validation accuracy has been improved.
 
 ---
 
@@ -671,7 +605,7 @@ print(images_normalized.shape)
 
 
 
-![png](output_37_1.png)
+![png](output_36_1.png)
 
 
     (8, 32, 32, 1)
@@ -704,7 +638,7 @@ with tf.Session() as sess:
 ```
 
     INFO:tensorflow:Restoring parameters from ./lenet
-    Test Set Accuracy = 0.750
+    Test Set Accuracy = 0.625
 
 
 ### Discussion
@@ -713,7 +647,7 @@ The performance on the new images is compared to the accuracy results of the tes
 
 #### Answer:
 
-The model appears to have predicted the new signs with 75% accuracy, which is less than the 94.6% test accuracy. This is reasonable due to the small testing dataset and also some difference existing between the testing images and trainging images.
+The model appears to have predicted the new signs with 62.5% accuracy (correctly predict 5 out of 8 images), which is less than the 94.6% test accuracy. This is reasonable due to the small testing dataset and also some difference existing between the testing images and trainging images.
 
 ### Analyze Performance
 
@@ -742,29 +676,29 @@ with tf.Session() as sess:
         axs[6*i].imshow(image)
         axs[6*i].set_title('Input Image')
         guess1 = my_top_k[1][i][0]
-        index1 = np.argwhere(y_validation == guess1)[0]
+        index1 = np.argwhere(y_valid == guess1)[0]
         axs[6*i+1].axis('off')
-        axs[6*i+1].imshow(X_validation[index1].squeeze(), cmap='gray')
+        axs[6*i+1].imshow(X_valid[index1].squeeze(), cmap='gray')
         axs[6*i+1].set_title('1st guess: {} ({:.0f}%)'.format(guess1, 100*my_top_k[0][i][0]))
         guess2 = my_top_k[1][i][1]
-        index2 = np.argwhere(y_validation == guess2)[0]
+        index2 = np.argwhere(y_valid == guess2)[0]
         axs[6*i+2].axis('off')
-        axs[6*i+2].imshow(X_validation[index2].squeeze(), cmap='gray')
+        axs[6*i+2].imshow(X_valid[index2].squeeze(), cmap='gray')
         axs[6*i+2].set_title('2nd guess: {} ({:.0f}%)'.format(guess2, 100*my_top_k[0][i][1]))
         guess3 = my_top_k[1][i][2]
-        index3 = np.argwhere(y_validation == guess3)[0]
+        index3 = np.argwhere(y_valid == guess3)[0]
         axs[6*i+3].axis('off')
-        axs[6*i+3].imshow(X_validation[index3].squeeze(), cmap='gray')
+        axs[6*i+3].imshow(X_valid[index3].squeeze(), cmap='gray')
         axs[6*i+3].set_title('3rd guess: {} ({:.0f}%)'.format(guess3, 100*my_top_k[0][i][2]))
         guess4 = my_top_k[1][i][3]
-        index4 = np.argwhere(y_validation == guess4)[0]
+        index4 = np.argwhere(y_valid == guess4)[0]
         axs[6*i+4].axis('off')
-        axs[6*i+4].imshow(X_validation[index4].squeeze(), cmap='gray')
+        axs[6*i+4].imshow(X_valid[index4].squeeze(), cmap='gray')
         axs[6*i+4].set_title('4th guess: {} ({:.0f}%)'.format(guess4, 100*my_top_k[0][i][3]))
         guess5 = my_top_k[1][i][4]
-        index5 = np.argwhere(y_validation == guess5)[0]
+        index5 = np.argwhere(y_valid == guess5)[0]
         axs[6*i+5].axis('off')
-        axs[6*i+5].imshow(X_validation[index5].squeeze(), cmap='gray')
+        axs[6*i+5].imshow(X_valid[index5].squeeze(), cmap='gray')
         axs[6*i+5].set_title('5th guess: {} ({:.0f}%)'.format(guess5, 100*my_top_k[0][i][4]))
 ```
 
@@ -772,7 +706,7 @@ with tf.Session() as sess:
 
 
 
-![png](output_43_1.png)
+![png](output_42_1.png)
 
 
 ### Discussion
@@ -781,7 +715,7 @@ Discusses how certain or uncertain the model is of its predictions
 
 ### Answer
 
-The model is somehow 100% certain of 5 out of 6 of the signs I gave it. For the first image, it has 93% certain of its prediction. For the third and sixth images, although the model has 100% certain of its prediction, the model has misclassified these two images. This indicates the shortage of given deep learning model on the uncertainty qunatification.
+The model is somehow almost 100% certain of six signs I gave it. However, this model misclassified the first, fifth and sixth images. It is reasonable that the first image is misclassfied because this traffic sign is a speed limit but with some characters on that. This may be very few in the training data set. For the fifth and sixth images, the model has predicted them to class 23 and 38 with 100%, however, we can see that the true classes are also included in the top 5 selections, for example the 2nd guess for the fifth image and the 3rd guess for the sixth image. This means that the model still needs to be improved for generalization.
 
 
 ```python
