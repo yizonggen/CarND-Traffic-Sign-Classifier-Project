@@ -5,34 +5,28 @@
 
 ## Project: Build a Traffic Sign Recognition Classifier
 
-In this notebook, a template is provided for you to implement your functionality in stages, which is required to successfully complete this project. If additional code is required that cannot be included in the notebook, be sure that the Python code is successfully imported and included in your submission if necessary. 
+The goals / steps of this project are the following:
+* Load the data set (see below for links to the project data set)
+* Explore, summarize and visualize the data set
+* Design, train and test a model architecture
+* Use the model to make predictions on new images
+* Analyze the softmax probabilities of the new images
+* Summarize the results with a written report
 
-> **Note**: Once you have completed all of the code implementations, you need to finalize your work by exporting the iPython Notebook as an HTML document. Before exporting the notebook to html, all of the code cells need to have been run so that reviewers can see the final implementation and output. You can then export the notebook by using the menu above and navigating to  \n",
-    "**File -> Download as -> HTML (.html)**. Include the finished document along with this notebook as your submission. 
-
-In addition to implementing code, there is a writeup to complete. The writeup should be completed in a separate file, which can be either a markdown file or a pdf document. There is a [write up template](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/writeup_template.md) that can be used to guide the writing process. Completing the code template and writeup template will cover all of the [rubric points](https://review.udacity.com/#!/rubrics/481/view) for this project.
-
-The [rubric](https://review.udacity.com/#!/rubrics/481/view) contains "Stand Out Suggestions" for enhancing the project beyond the minimum requirements. The stand out suggestions are optional. If you decide to pursue the "stand out suggestions", you can include the code in this Ipython notebook and also discuss the results in the writeup file.
-
-
->**Note:** Code and Markdown cells can be executed using the **Shift + Enter** keyboard shortcut. In addition, Markdown cells can be edited by typically double-clicking the cell to enter edit mode.
-
-
-```python
-import pickle
-import numpy as np
-import matplotlib.pyplot as plt
-import random
-import cv2
-import tensorflow as tf
-from tensorflow.contrib.layers import flatten
-
-%matplotlib inline
-
-```
+## Rubric Points
+### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
 
 ---
-## Step 0: Load The Data
+### Writeup / README
+
+You're reading it! and here is a link to my [project code](https://github.com/yizonggen/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb)
+
+### Data Set Summary & Exploration
+
+#### 1. Provide a basic summary of the data set. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
+
+---
+#### Step 0: Load The Data
 
 
 ```python
@@ -58,7 +52,7 @@ X_test, y_test = test['features'], test['labels']
 
 ---
 
-## Step 1: Dataset Summary & Exploration
+#### Step 1: Dataset Summary & Exploration
 
 The pickled data is a dictionary with 4 key/value pairs:
 
@@ -67,9 +61,7 @@ The pickled data is a dictionary with 4 key/value pairs:
 - `'sizes'` is a list containing tuples, (width, height) representing the original width and height the image.
 - `'coords'` is a list containing tuples, (x1, y1, x2, y2) representing coordinates of a bounding box around the sign in the image. **THESE COORDINATES ASSUME THE ORIGINAL IMAGE. THE PICKLED DATA CONTAINS RESIZED VERSIONS (32 by 32) OF THESE IMAGES**
 
-Complete the basic data summary below. Use python, numpy and/or pandas methods to calculate the data summary rather than hard coding the results. For example, the [pandas shape method](http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.shape.html) might be useful for calculating some of the summary results. 
-
-### Provide a Basic Summary of the Data Set Using Python, Numpy and/or Pandas
+#### Provide a Basic Summary of the Data Set Using Python, Numpy and/or Pandas
 
 
 ```python
@@ -102,8 +94,9 @@ print("Number of classes =", n_classes)
     Number of classes = 43
 
 
-### Include an exploratory visualization of the dataset
+#### 2. Include an exploratory visualization of the dataset
 
+Here is an exploratory visualization of the data set. They include bar charts showing how the number of data samples distributed in training, validation and testing dataset.
 Visualize the German Traffic Signs Dataset using the pickled file(s). This is open ended, suggestions include: plotting traffic sign images, plotting the count of each sign, etc. 
 
 The [Matplotlib](http://matplotlib.org/) [examples](http://matplotlib.org/examples/index.html) and [gallery](http://matplotlib.org/gallery.html) pages are a great resource for doing visualizations in Python.
