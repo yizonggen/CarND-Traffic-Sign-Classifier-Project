@@ -27,7 +27,7 @@ This project requires the following Python libraries installed:
 - [scikit-learn](http://scikit-learn.org/)
 - [TensorFlow](http://tensorflow.org)
 - [Matplotlib](http://matplotlib.org/)
-- [Pandas](http://pandas.pydata.org/) (Optional)
+- [Pandas](http://pandas.pydata.org/)
 
 Run this command at the terminal prompt to install [OpenCV](http://opencv.org/):
 
