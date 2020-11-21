@@ -19,7 +19,7 @@ The goals / steps of this project are the following:
 
 ### Dependencies
 
-This project requires **Python 3.5** and the following Python libraries installed:
+This project requires the following Python libraries installed:
 
 - [Jupyter](http://jupyter.org/)
 - [NumPy](http://www.numpy.org/)
@@ -29,7 +29,7 @@ This project requires **Python 3.5** and the following Python libraries installe
 - [Matplotlib](http://matplotlib.org/)
 - [Pandas](http://pandas.pydata.org/) (Optional)
 
-Run this command at the terminal prompt to install [OpenCV](http://opencv.org/). Useful for image processing:
+Run this command at the terminal prompt to install [OpenCV](http://opencv.org/):
 
 - `conda install -c conda-forge opencv`
 
