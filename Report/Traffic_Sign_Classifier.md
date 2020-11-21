@@ -96,9 +96,7 @@ print("Number of classes =", n_classes)
 
 #### Include an exploratory visualization of the dataset
 
-Here is an exploratory visualization of the data set. It is a bar chart showing how the data ...
-
-I visualized the German Traffic Signs Dataset using the pickled file(s). I also included the bar charts showing the number of samples for each classes in training, validation and testing data set.
+Here is an exploratory visualization of the data set. I visualized the German Traffic Signs Dataset using the randomly selected samples from the pickled file(s). I also included the bar charts showing the number of samples for each classes in training, validation and testing data set.
 
 ```python
 ### Data exploration visualization code goes here.
