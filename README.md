@@ -17,23 +17,6 @@ The goals / steps of this project are the following:
 * Summarize the results with a written report
 
 
-### Dependencies
-
-This project requires the following Python libraries installed:
-
-- [Jupyter](http://jupyter.org/)
-- [NumPy](http://www.numpy.org/)
-- [SciPy](https://www.scipy.org/)
-- [scikit-learn](http://scikit-learn.org/)
-- [TensorFlow](http://tensorflow.org)
-- [Matplotlib](http://matplotlib.org/)
-- [Pandas](http://pandas.pydata.org/)
-
-Run this command at the terminal prompt to install [OpenCV](http://opencv.org/):
-
-- `conda install -c conda-forge opencv`
-
-
 ### Dataset and Repository
 
 1. Download the data set. The classroom has a link to the data set in the "Project Instructions" content. This is a pickled dataset in which we've already resized the images to 32x32. It contains a training, validation and test set.
