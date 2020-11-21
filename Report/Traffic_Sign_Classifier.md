@@ -178,11 +178,11 @@ plt.show()
 
 #### 1. Pre-process the Data Set (normalization, grayscale, etc.)
 
-The preprocessing process consists of:
+The preprocessing process consists of the following steps:
 
-- Converting to grayscale: It helps to reduce training time, which was nice when a GPU wasn't available.
+- Converting the RGB images to grayscale images. The color information in the traffic signal is not the key part to classify the traffic sign. Therefore, transfering the color image can helps to reduce the size of the input data and then reduce the training time.
 
-- Normalizing the data to the range (-1,1) - This was done using the line of code X_train_normalized = (X_train - 128)/128. This is because having a wider distribution in the data would make it more difficult to train using a singlar learning rate. Different features could encompass far different ranges and a single learning rate might make some weights diverge.
+- The image data has been normalized so that the data has approximately mean zero and equal variance. For this project, the (pixel - 128)/ 128 is used to approximately normalize the image data. However, we can see that the mean value is not exactly zero (about -0.35), but is close to zero. The normalization will help to ensure different features have similar range, which will make the training process easier to converge under a given learning rate. 
 
 
 ```python
