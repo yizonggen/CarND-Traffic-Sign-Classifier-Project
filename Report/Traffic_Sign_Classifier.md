@@ -551,7 +551,7 @@ print(images_normalized.shape)
 
 #### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set.
 
-The model appears to have predicted the new signs with 62.5% accuracy (correctly predict 5 out of 8 images), which is less than the 94.6% test accuracy. This is reasonable due to the small testing dataset and also some difference existing between the testing images and trainging images.
+The model appears to have predicted the new signs with 62.5% accuracy (correctly predict 5 out of 8 images), which is less than the 93.2% test accuracy. This is reasonable due to the small testing dataset and also some difference existing between the testing images and trainging images.
 
 ```python
 ### Run the predictions here and use the model to output the prediction for each image.
@@ -572,7 +572,7 @@ with tf.Session() as sess:
 
 #### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. 
 
-The model is somehow almost 100% certain of six signs I gave it. However, this model misclassified the first, fifth and sixth images. It is reasonable that the first image is misclassfied because this traffic sign is a speed limit but with some characters on that. This may be very few in the training data set. For the fifth and sixth images, the model has predicted them to class 23 and 38 with 100%, however, we can see that the true classes are also included in the top 5 selections, for example the 2nd guess for the fifth image and the 3rd guess for the sixth image. This means that the model still needs to be improved for generalization.
+The model provides almost 100% certain on the predictions of the given six signs. However, this model misclassified the first, fifth and sixth images. It is reasonable that the first image is misclassfied because this traffic sign is a speed limit but with some characters on that. This type of traffic sign may be very few in the training data set. For the fifth and sixth images, the model has predicted them to class 23 and 38 with 100%, however, we can see that the true classes are not these cases, but the true labels are also included in the top 5 selections, for example the 2nd guess for the fifth image and the 3rd guess for the sixth image. This means that the model has the potential to provide correct answer but we still need to improve it for better generalization.
 
 ```python
 ### Calculate the accuracy for these 5 new images. 
