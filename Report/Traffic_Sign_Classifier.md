@@ -237,7 +237,7 @@ X_test = X_test_normalized
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
-The following is the model architecture for the original LeNet-5, which is defined in "LeNet(x)".
+The following is the model architecture for the original LeNet-5, which is defined in "LeNet(x)". This is starting point for building the DL model for our task.
 
 - 5x5 convolution (32x32x1 in, 28x28x6 out)
 - ReLU
