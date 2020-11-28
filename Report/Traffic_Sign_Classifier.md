@@ -1,40 +1,32 @@
 
 # Self-Driving Car Engineer Nanodegree
 
-## Deep Learning
-
 ## Project: Build a Traffic Sign Recognition Classifier
 
-In this notebook, a template is provided for you to implement your functionality in stages, which is required to successfully complete this project. If additional code is required that cannot be included in the notebook, be sure that the Python code is successfully imported and included in your submission if necessary. 
+---
 
-> **Note**: Once you have completed all of the code implementations, you need to finalize your work by exporting the iPython Notebook as an HTML document. Before exporting the notebook to html, all of the code cells need to have been run so that reviewers can see the final implementation and output. You can then export the notebook by using the menu above and navigating to  \n",
-    "**File -> Download as -> HTML (.html)**. Include the finished document along with this notebook as your submission. 
+**Build a Traffic Sign Recognition Project**
 
-In addition to implementing code, there is a writeup to complete. The writeup should be completed in a separate file, which can be either a markdown file or a pdf document. There is a [write up template](https://github.com/udacity/CarND-Traffic-Sign-Classifier-Project/blob/master/writeup_template.md) that can be used to guide the writing process. Completing the code template and writeup template will cover all of the [rubric points](https://review.udacity.com/#!/rubrics/481/view) for this project.
+The goals / steps of this project are the following:
+* Load the data set (see below for links to the project data set)
+* Explore, summarize and visualize the data set
+* Design, train and test a model architecture
+* Use the model to make predictions on new images
+* Analyze the softmax probabilities of the new images
+* Summarize the results with a written report
 
-The [rubric](https://review.udacity.com/#!/rubrics/481/view) contains "Stand Out Suggestions" for enhancing the project beyond the minimum requirements. The stand out suggestions are optional. If you decide to pursue the "stand out suggestions", you can include the code in this Ipython notebook and also discuss the results in the writeup file.
-
-
->**Note:** Code and Markdown cells can be executed using the **Shift + Enter** keyboard shortcut. In addition, Markdown cells can be edited by typically double-clicking the cell to enter edit mode.
-
-
-```python
-import pickle
-import numpy as np
-import matplotlib.pyplot as plt
-import random
-import cv2
-import tensorflow as tf
-from tensorflow.contrib.layers import flatten
-from collections import Counter
-from sklearn.utils import shuffle
-
-%matplotlib inline
-
-```
+## Rubric Points
+### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
 
 ---
-## Step 0: Load The Data
+### Writeup / README
+
+You're reading it! and here is a link to my [project code](https://github.com/yizonggen/CarND-Traffic-Sign-Classifier-Project/blob/master/Traffic_Sign_Classifier.ipynb)
+
+---
+### Data Set Summary & Exploration
+---
+#### Step 0: Load The Data
 
 
 ```python
@@ -60,7 +52,7 @@ X_test, y_test = test['features'], test['labels']
 
 ---
 
-## Step 1: Dataset Summary & Exploration
+#### Step 1: Dataset Summary & Exploration
 
 The pickled data is a dictionary with 4 key/value pairs:
 
@@ -69,9 +61,8 @@ The pickled data is a dictionary with 4 key/value pairs:
 - `'sizes'` is a list containing tuples, (width, height) representing the original width and height the image.
 - `'coords'` is a list containing tuples, (x1, y1, x2, y2) representing coordinates of a bounding box around the sign in the image. **THESE COORDINATES ASSUME THE ORIGINAL IMAGE. THE PICKLED DATA CONTAINS RESIZED VERSIONS (32 by 32) OF THESE IMAGES**
 
-Complete the basic data summary below. Use python, numpy and/or pandas methods to calculate the data summary rather than hard coding the results. For example, the [pandas shape method](http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.shape.html) might be useful for calculating some of the summary results. 
 
-### Provide a Basic Summary of the Data Set Using Python, Numpy and/or Pandas
+#### Provide a Basic Summary of the Data Set Using Python, Numpy and/or Pandas
 
 
 ```python
@@ -104,14 +95,9 @@ print("Number of classes =", n_classes)
     Number of classes = 43
 
 
-### Include an exploratory visualization of the dataset
+#### Include an exploratory visualization of the dataset
 
-Visualize the German Traffic Signs Dataset using the pickled file(s). This is open ended, suggestions include: plotting traffic sign images, plotting the count of each sign, etc. 
-
-The [Matplotlib](http://matplotlib.org/) [examples](http://matplotlib.org/examples/index.html) and [gallery](http://matplotlib.org/gallery.html) pages are a great resource for doing visualizations in Python.
-
-**NOTE:** It's recommended you start with something simple first. If you wish to do more, come back to it after you've completed the rest of the sections. It can be interesting to look at the distribution of classes in the training, validation and test set. Is the distribution the same? Are there more examples of some classes than others?
-
+Here is an exploratory visualization of the data set. I visualized the German Traffic Signs Dataset using the randomly selected samples from the pickled file(s). I also included the bar charts showing the number of samples for each classes in training, validation and testing data set.
 
 ```python
 ### Data exploration visualization code goes here.
@@ -188,30 +174,19 @@ show_class_count_num(y_test, 'Testing Set')
 
 ----
 
-## Step 2: Design and Test a Model Architecture
+### Design and Test a Model Architecture
 
-Design and implement a deep learning model that learns to recognize traffic signs. Train and test your model on the [German Traffic Sign Dataset](http://benchmark.ini.rub.de/?section=gtsrb&subsection=dataset).
 
-The LeNet-5 implementation shown in the [classroom](https://classroom.udacity.com/nanodegrees/nd013/parts/fbf77062-5703-404e-b60c-95b78b2f3f9e/modules/6df7ae49-c61c-4bb2-a23e-6527e69209ec/lessons/601ae704-1035-4287-8b11-e2c2716217ad/concepts/d4aca031-508f-4e0b-b493-e7b706120f81) at the end of the CNN lesson is a solid starting point. You'll have to change the number of classes and possibly the preprocessing, but aside from that it's plug and play! 
+#### 1. Pre-process the Data Set (normalization, grayscale, etc.)
 
-With the LeNet-5 solution from the lecture, you should expect a validation set accuracy of about 0.89. To meet specifications, the validation set accuracy will need to be at least 0.93. It is possible to get an even higher accuracy, but 0.93 is the minimum for a successful project submission. 
+The preprocessing process consists of the following steps:
 
-There are various aspects to consider when thinking about this problem:
+- The color images in the input dataset has been converted into grayscale images. The color information in the traffic signal is not the key part to classify the traffic signs in this problem (of course, if we have to classify the traffic lights, e.g. red, yellow, green, this will be an important perspective). Therefore, transfering the color image can help to reduce the size of the input data, which will reduce the requirement on complicated models and also can reduce the training time.
 
-- Neural network architecture (is the network over or underfitting?)
-- Play around preprocessing techniques (normalization, rgb to grayscale, etc)
-- Number of examples per label (some have more than others).
-- Generate fake data.
+- The input image data has been normalized so that the data has approximately mean zero and equal variance. For this project, a simple calculation, e.g. (pixel - 128)/ 128 is used to approximately normalize the image data. However, we can see that the mean value is not exactly zero (about -0.35), but is close to zero and the training, validation and testing dataset are similar to each other. The normalization will help to ensure different features have similar ranges, which will make the training process easier to converge under a given learning rate.
 
-Here is an example of a [published baseline model on this problem](http://yann.lecun.com/exdb/publis/pdf/sermanet-ijcnn-11.pdf). It's not required to be familiar with the approach used in the paper but, it's good practice to try to read papers like these.
+Other preprocessing methods are not utilized at this point. Another method, e.g. data augmentation, can also help to improve the performance. 
 
-### Pre-process the Data Set (normalization, grayscale, etc.)
-
-Minimally, the image data should be normalized so that the data has mean zero and equal variance. For image data, `(pixel - 128)/ 128` is a quick way to approximately normalize the data and can be used in this project. 
-
-Other pre-processing steps are optional. You can try different techniques to see if it improves performance. 
-
-Use the code cell (or multiple code cells, if necessary) to implement the first step of your project.
 
 
 ```python
@@ -258,24 +233,47 @@ X_valid = X_valid_normalized
 X_test = X_test_normalized
 ```
 
-### Discussion
-
-The submission describes the preprocessing techniques used and why these techniques were chosen.
-
-### Answer:
-
-The preprocessing process consists of the following steps:
-
-- The color images in the input dataset has been converted into grayscale images. The color information in the traffic signal is not the key part to classify the traffic signs in this problem (of course, if we have to classify the traffic lights, e.g. red, yellow, green, this will be an important perspective). Therefore, transfering the color image can help to reduce the size of the input data, which will reduce the requirement on complicated models and also can reduce the training time.
-
-- The input image data has been normalized so that the data has approximately mean zero and equal variance. For this project, a simple calculation, e.g. (pixel - 128)/ 128 is used to approximately normalize the image data. However, we can see that the mean value is not exactly zero (about -0.35), but is close to zero and the training, validation and testing dataset are similar to each other. The normalization will help to ensure different features have similar ranges, which will make the training process easier to converge under a given learning rate.
-
-Other preprocessing methods are not utilized at this point. Another method, e.g. data augmentation, can also help to improve the performance.
 
 
-### Model Architecture
+#### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
-The LeNet-5 implementation shown in the classroom at the end of the CNN lesson is used here as a starting point. The number of classes has been changed to 43 in this case.
+The following is the model architecture for the original LeNet-5, which is defined in "LeNet(x)".
+
+- 5x5 convolution (32x32x1 in, 28x28x6 out)
+- ReLU
+- 2x2 max pool (28x28x6 in, 14x14x6 out)
+- 5x5 convolution (14x14x6 in, 10x10x16 out)
+- ReLU
+- 2x2 max pool (10x10x16 in, 5x5x16 out)
+- Flatten layer (5x5x16 -> 400)
+- Fully connected layer (400 in, 120 out)
+- ReLU
+- Dropout layer
+- Fully connected layer (120 in, 84 out)
+- ReLU
+- Dropout layer
+- Fully connected layer (84 in, 43 out)
+
+
+When the original LeNet-5 is used, the model is under fitted using the given training data. In order to have a better testing accuracy, I have modified the model by adding an additional fully connected layer and also change the number of neurons in the fully connected layer. The following is the model architecture for the modified LeNet, which is defined in "LeNet_modified(x)"
+
+- 5x5 convolution (32x32x1 in, 28x28x6 out)
+- ReLU
+- 2x2 max pool (28x28x6 in, 14x14x6 out)
+- 5x5 convolution (14x14x6 in, 10x10x16 out)
+- ReLU
+- 2x2 max pool (10x10x16 in, 5x5x16 out)
+- Flatten layer (5x5x16 -> 400)
+- Fully connected layer (400 in, 512 out)
+- ReLU
+- Dropout layer
+- Fully connected layer (512 in, 256 out)
+- ReLU
+- Dropout layer
+- Fully connected layer (256 in, 128 out)
+- ReLU
+- Dropout layer
+- Fully connected layer (128 in, 43 out)
 
 
 ```python
@@ -400,45 +398,16 @@ def LeNet_modified(x):
     return logits
 ```
 
-### Details of Model Architecture
+#### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
-The following is the model architecture for the original LeNet-5, which is defined in "LeNet(x)".
+To train the model, I used an Adam optimizer is used. The hyperparameters are used as follows:
 
-- 5x5 convolution (32x32x1 in, 28x28x6 out)
-- ReLU
-- 2x2 max pool (28x28x6 in, 14x14x6 out)
-- 5x5 convolution (14x14x6 in, 10x10x16 out)
-- ReLU
-- 2x2 max pool (10x10x16 in, 5x5x16 out)
-- Flatten layer (5x5x16 -> 400)
-- Fully connected layer (400 in, 120 out)
-- ReLU
-- Dropout layer
-- Fully connected layer (120 in, 84 out)
-- ReLU
-- Dropout layer
-- Fully connected layer (84 in, 43 out)
-
-
-When the original LeNet-5 is used, the model is under fitted using the given training data. In order to have a better testing accuracy, I have modified the model by adding an additional fully connected layer and also change the number of neurons in the fully connected layer. The following is the model architecture for the modified LeNet, which is defined in "LeNet_modified(x)"
-
-- 5x5 convolution (32x32x1 in, 28x28x6 out)
-- ReLU
-- 2x2 max pool (28x28x6 in, 14x14x6 out)
-- 5x5 convolution (14x14x6 in, 10x10x16 out)
-- ReLU
-- 2x2 max pool (10x10x16 in, 5x5x16 out)
-- Flatten layer (5x5x16 -> 400)
-- Fully connected layer (400 in, 512 out)
-- ReLU
-- Dropout layer
-- Fully connected layer (512 in, 256 out)
-- ReLU
-- Dropout layer
-- Fully connected layer (256 in, 128 out)
-- ReLU
-- Dropout layer
-- Fully connected layer (128 in, 43 out)
+- batch size: 128
+- epochs: 50
+- learning rate: 0.001
+- mu: 0
+- sigma: 0.1
+- dropout keep probability: 0.7
 
 
 ```python
@@ -624,13 +593,9 @@ with tf.Session() as sess:
     Test Set Accuracy = 0.9327
 
 
-### Discussion
+#### 4. Describes the approach to finding a solution. Accuracy on the validation set is 0.93 or greater.
 
-Describes the approach to finding a solution. Accuracy on the validation set is 0.93 or greater.
-
-### Answer
-
-The testing accuracy is 93.27%
+The testing accuracy for the trained model is 93.27%
 
 At the begining of the process to find the solution, I have tried the original model architecture of LeNet-5, which I only changed the number of outputs. But I found that the validation accuracy can only reach around 93%, which made the best testing accuracy around 91~92%. In order to improve the performance, I have modified the model architecture by adding one additional fully connected layer and also using larger size of fully connected layer. After using the modified model, I have got the validation accuracy larger then 95% after 50 epochs. The testing accuaracy is 93.27%. 
 
@@ -640,13 +605,13 @@ Furthermore, in order to reduce the overfitting, during the training process, I 
 
 ---
 
-## Step 3: Test a Model on New Images
+### Test a Model on New Images
 
-To give yourself more insight into how your model is working, download at least five pictures of German traffic signs from the web and use your model to predict the traffic sign type.
+#### 1. Choose five German traffic signs found on the web and provide them in the report. 
 
-You may find `signnames.csv` useful as it contains mappings from the class id (integer) to the actual sign name.
+The images used for testing are obtained from https://routetogermany.com/drivingingermany/road-signs. These traffic signs are not different from photos which are taken from real world scenarios. There are no background information in these images. In this case, it should be easier for classification. However, our model is trained based on the real world images with other background information and the traffic signs in training set are not filled into entire image. There are difference between these testing images and the used training images.
 
-### Load and Output the Images
+Some images in our testing images may be difficult to be classified, for example, the "'new-found-traffic-signs/1.png'", although it is a speed limit sign, it has a characters "zone" in this image, this is different from most of the samples in our training data set.
 
 
 ```python
@@ -704,18 +669,10 @@ print(images_normalized.shape)
     (8, 32, 32, 1)
 
 
-### Discussion
 
-Discussion is made as to particular qualities of the images or traffic signs in the images that are of interest, such as whether they would be difficult for the model to classify.
+#### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set.
 
-### Answer:
-
-The images used for testing are obtained from https://routetogermany.com/drivingingermany/road-signs. These traffic signs are not different from photos which are taken from real world scenarios. There are no background information in these images. In this case, it should be easier for classification. However, our model is trained based on the real world images with other background information and the traffic signs in training set are not filled into entire image. There are difference between these testing images and the used training images.
-
-Some images in our testing images may be difficult to be classified, for example, the "'new-found-traffic-signs/1.png'", although it is a speed limit sign, it has a characters "zone" in this image, this is different from most of the samples in our training data set.
-
-### Predict the Sign Type for Each Image
-
+The trained model have predicted the new traffic signs with 75% accuracy (correctly predict 6 out of 8 images), which is less than the 93.27% testing accuracy. This is reasonable due to the small testing dataset and also some difference existing between these testing images and trainging images.
 
 ```python
 ### Run the predictions here and use the model to output the prediction for each image.
@@ -734,15 +691,11 @@ with tf.Session() as sess:
     Test Set Accuracy = 0.7500
 
 
-### Discussion
 
-The performance on the new images is compared to the accuracy results of the test set.
+#### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. 
 
-#### Answer:
+The model is somehow almost 100% certain of six signs I gave it, only the first one has 93% certain. However, this model misclassified the first and sixth images, both of them are speed limit traffic signs. It is reasonable that the first image is misclassfied because this traffic sign is a speed limit but with some characters on that. This may be very few in the training data set. For the first and sixth images, the model has predicted them to class 1 and 38 to class 29 and 3 with almost 100% certain. However, we can see that the true classes are also included in the top 5 selections, for example the 2nd predcition for the first image and the 3rd prediction for the sixth image. This means that the model can capture some underlying patterns in thes samples but the model still needs to be improved for generalization and better accuracy.
 
-The trained model have predicted the new traffic signs with 75% accuracy (correctly predict 6 out of 8 images), which is less than the 93.27% testing accuracy. This is reasonable due to the small testing dataset and also some difference existing between these testing images and trainging images.
-
-### Analyze Performance
 
 
 ```python
@@ -782,17 +735,3 @@ with tf.Session() as sess:
 
 
 ![png](output_44_1.png)
-
-
-### Discussion
-
-Discusses how certain or uncertain the model is of its predictions
-
-### Answer
-
-The model is somehow almost 100% certain of six signs I gave it, only the first one has 93% certain. However, this model misclassified the first and sixth images, both of them are speed limit traffic signs. It is reasonable that the first image is misclassfied because this traffic sign is a speed limit but with some characters on that. This may be very few in the training data set. For the first and sixth images, the model has predicted them to class 1 and 38 to class 29 and 3 with almost 100% certain. However, we can see that the true classes are also included in the top 5 selections, for example the 2nd predcition for the first image and the 3rd prediction for the sixth image. This means that the model can capture some underlying patterns in thes samples but the model still needs to be improved for generalization and better accuracy.
-
-
-```python
-
-```
