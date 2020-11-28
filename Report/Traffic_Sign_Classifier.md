@@ -467,21 +467,6 @@ def evaluate(X_data, y_data):
     return total_accuracy / num_examples
 ```
 
-### Discussion
-How the model was trained by discussing what optimizer was used, batch size, number of epochs and values for hyperparameters.
-
-
-### Answer:
-
-The Adam optimizer is used. The hyperparameters are used as follows:
-
-- batch size: 128
-- epochs: 50
-- learning rate: 0.001
-- mu: 0
-- sigma: 0.1
-- dropout keep probability: 0.7
-
 
 
 ```python
